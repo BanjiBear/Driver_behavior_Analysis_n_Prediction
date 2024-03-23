@@ -10,4 +10,9 @@ public interface DriverBehaviorAnalysisService{
 	
 	public ResponseFactory getDriverSummaryWithTime(String driverID, String time);
 	
+	//For testing purpose
+	//public String getAllDriverSummary();
+	//public String getDriverSummary(String driverID);
+	//public String getDriverSummaryWithTime(String driverID, String time);
+	
 }

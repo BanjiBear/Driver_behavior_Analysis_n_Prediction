@@ -1,6 +1,10 @@
 package hk.polyu.webservice.spark.DBAP.service;
 
 
+import java.util.ArrayList;
+
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 //Spring dependencies
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,8 @@ public class DriverBehaviorAnalysisServiceImpl implements DriverBehaviorAnalysis
 	 * 
 	 * */
 	
+	@Autowired
+	private ArrayList<Dataset<Row>> getData;
 	private ResponseFactory responseFactory = new ResponseFactory();
 	
 	@Override
@@ -39,6 +45,8 @@ public class DriverBehaviorAnalysisServiceImpl implements DriverBehaviorAnalysis
 	public ResponseFactory getDriverSummaryWithTime(String driverID, String time){
 		return responseFactory;
 	}
-
+	
+	
+	//private ResponseFactory responseFormation(){}
 	
 }
