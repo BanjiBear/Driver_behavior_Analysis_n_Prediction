@@ -27,6 +27,10 @@ public class ApplicationInitializer implements WebApplicationInitializer {
 		rootContext.register(AppConfig.class);
 		
 		// Manage Lifecycle of the root Context (????)
+		/*
+		 * Difference between DispatcherServlet and ContextLoaderListener
+		 * https://stackoverflow.com/questions/37253568/dispatcherservlet-and-contextloaderlistener-in-spring
+		 * */
 		container.addListener(new ContextLoaderListener(rootContext));
 		
 		// Create dispatcher context
