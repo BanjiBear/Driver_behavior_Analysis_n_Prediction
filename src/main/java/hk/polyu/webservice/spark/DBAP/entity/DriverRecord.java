@@ -1,13 +1,15 @@
 package hk.polyu.webservice.spark.DBAP.entity;
 
+
+import org.springframework.stereotype.Component;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
+@Component
 public class DriverRecord{
 	
 	/*
@@ -40,10 +42,6 @@ public class DriverRecord{
 	private String isHthrottleStop;
 	private String isOilLeak;
 	
-	
-	@Autowired
-	private DriverInfo driverInfo;
-	public DriverInfo getDriverInfo() { return driverInfo; }
 	
 	public void setLatitude(String latitude) { this.latitude = latitude; }
 	public String getLatitude() { return this.latitude; }
