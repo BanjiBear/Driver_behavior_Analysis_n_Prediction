@@ -2,6 +2,8 @@ package hk.polyu.webservice.spark.DBAP.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.text.SimpleDateFormat;  
+import java.util.Date; 
 
 // Spring dependencies
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -35,6 +36,12 @@ public class ApplicationController{
 	//@ResponseBody is included in the @RestController annotation
 	public String test() {
 		return "The service is available";
+	}
+	
+	@GetMapping("/")
+	//@ResponseBody is included in the @RestController annotation
+	public String home() {
+		return "DBAP RESTful web services available at: " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
 	}
 	
 	@GetMapping("/drivers")
