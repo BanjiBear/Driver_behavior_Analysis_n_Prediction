@@ -30,37 +30,37 @@ public class AppConfig {
 	 * Note: Keep it in case of further individual usage
 	 * */
 	
-//	@Value("${spring.application.name}")
-//	private String applicationName;
-//	
-//	@Value("${spring.application.data.path}")
-//	private String dataPath;
-//	
-//	private ArrayList<Dataset<Row>> data;
-//	
-//	@Bean
-//	public SparkSession sparkSession(){
-//		/*
-//		 * Comparison of using SparkSession vs SparkContext
-//		 * Reference: https://www.ksolves.com/blog/big-data/spark/sparksession-vs-sparkcontext-what-are-the-differences
-//		 * */
-//		SparkSession spark = SparkSession.builder()
-//								.master("local[1]")
-//								.appName(applicationName)
-//								.getOrCreate();
-//		return spark;
-//	}
-//	
-//	@Bean
-//	public ArrayList<Dataset<Row>> getData(){
-//		SparkSession sparkSession = this.sparkSession();
-//		File[] allDataFiles = new File(dataPath).listFiles();
-//		
-//		for(int i = 0; i < allDataFiles.length; i++){
-//			this.data.add(sparkSession.read().csv(dataPath + allDataFiles[i].getName()));
-//		}		
-//		return this.data;
-//	}
+	@Value("${spring.application.name}")
+	private String applicationName;
+	
+	@Value("${spring.application.data.path}")
+	private String dataPath;
+	
+	private ArrayList<Dataset<Row>> data = new ArrayList<Dataset<Row>>();
+	
+	@Bean
+	public SparkSession sparkSession(){
+		/*
+		 * Comparison of using SparkSession vs SparkContext
+		 * Reference: https://www.ksolves.com/blog/big-data/spark/sparksession-vs-sparkcontext-what-are-the-differences
+		 * */
+		SparkSession spark = SparkSession.builder()
+								.master("local[1]")
+								.appName(applicationName)
+								.getOrCreate();
+		return spark;
+	}
+	
+	@Bean
+	public ArrayList<Dataset<Row>> getData(){
+		SparkSession sparkSession = this.sparkSession();
+		File[] allDataFiles = new File(dataPath).listFiles();
+		
+		for(int i = 0; i < allDataFiles.length; i++){
+			this.data.add(sparkSession.read().csv(dataPath + allDataFiles[i].getName()));
+		}		
+		return this.data;
+	}
 }
 
 
