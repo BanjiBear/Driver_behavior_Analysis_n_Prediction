@@ -42,7 +42,9 @@ public class AppConfig {
 	@Value("${spring.application.data.path}")
 	private String dataPath;
 	
-	private List<Dataset<Row>> data = new ArrayList<Dataset<Row>>();
+	private List<Dataset<Row>> dataList = new ArrayList<Dataset<Row>>();
+	private Dataset<Row> data;
+	
 	private static final List<String> columnName = Collections.unmodifiableList( new ArrayList<String>() {
 		{
 	        add("driverID");
@@ -75,7 +77,7 @@ public class AppConfig {
 		 * Reference: https://www.ksolves.com/blog/big-data/spark/sparksession-vs-sparkcontext-what-are-the-differences
 		 * */
 		SparkSession spark = SparkSession.builder()
-								.master("local[1]")
+								.master("local[4]")
 								.appName(applicationName)
 								.getOrCreate();
 		return spark;
@@ -88,8 +90,21 @@ public class AppConfig {
 		dataPreProcess(allDataFiles);
 		for(int i = 0; i < allDataFiles.length; i++){
 			Dataset<Row> dataset = sparkSession.read().csv(dataPath + allDataFiles[i].getName());
-			this.data.add(this.updateColumnName(dataset));
+			this.dataList.add(this.updateColumnName(dataset));
 		}	
+		return this.dataList;
+	}
+	
+	@Bean
+	public Dataset<Row> unionData(){
+		if(this.dataList.size() != 10) {
+			this.getData();
+		}
+		
+		this.data = this.dataList.get(0);
+		for(int i = 1; i < this.dataList.size(); i++) {
+			this.data = this.data.union(this.dataList.get(i));
+		}
 		return this.data;
 	}
 	
