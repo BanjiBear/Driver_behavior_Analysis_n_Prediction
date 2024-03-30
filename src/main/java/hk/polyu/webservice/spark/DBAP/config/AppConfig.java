@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import static org.apache.spark.sql.functions.col;
 
 
 // Root Configuration
@@ -86,7 +84,7 @@ public class AppConfig {
 		SparkSession sparkSession = this.sparkSession();
 		List<Dataset<Row>> dataList = new ArrayList<Dataset<Row>>();
 		File[] allDataFiles = new File(dataPath).listFiles();
-//		dataPreProcess(allDataFiles);
+		//dataPreProcess(allDataFiles);
 		for(int i = 0; i < allDataFiles.length; i++){
 			Dataset<Row> dataset = sparkSession.read().csv(dataPath + allDataFiles[i].getName());
 			dataList.add(this.updateColumnName(dataset));
@@ -104,6 +102,22 @@ public class AppConfig {
 			dataset = dataset.withColumnRenamed("_c" + Integer.toString(i), AppConfig.columnName.get(i));
 		}
 		dataset = dataset.drop("_c" + Integer.toString(19));
+		
+		dataset = dataset.withColumn("isRapidlySpeedup", dataset.col("isRapidlySpeedup").cast("Integer"));
+		dataset = dataset.withColumn("isRapidlySlowdown", dataset.col("isRapidlySlowdown").cast("Integer"));
+		
+		dataset = dataset.withColumn("isNeutralSlide", dataset.col("isNeutralSlide").cast("Integer"));
+		dataset = dataset.withColumn("isNeutralSlideFinished", dataset.col("isNeutralSlideFinished").cast("Integer"));
+		dataset = dataset.withColumn("neutralSlideTime", dataset.col("neutralSlideTime").cast("Integer"));
+		
+		dataset = dataset.withColumn("isOverspeed", dataset.col("isOverspeed").cast("Integer"));
+		dataset = dataset.withColumn("isOverspeedFinished", dataset.col("isOverspeedFinished").cast("Integer"));
+		dataset = dataset.withColumn("overspeedTime", dataset.col("overspeedTime").cast("Integer"));
+		
+		dataset = dataset.withColumn("isFatigueDriving", dataset.col("isFatigueDriving").cast("Integer"));
+		dataset = dataset.withColumn("isHthrottleStop", dataset.col("isHthrottleStop").cast("Integer"));
+		dataset = dataset.withColumn("isOilLeak", dataset.col("isOilLeak").cast("Integer"));
+		
 		return dataset;
 	}
 	
