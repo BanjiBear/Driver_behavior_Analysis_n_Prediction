@@ -42,9 +42,7 @@ public class AppConfig {
 	@Value("${spring.application.data.path}")
 	private String dataPath;
 	
-	private List<Dataset<Row>> dataList = new ArrayList<Dataset<Row>>();
 	private Dataset<Row> data;
-	
 	private static final List<String> columnName = Collections.unmodifiableList( new ArrayList<String>() {
 		{
 	        add("driverID");
@@ -84,32 +82,25 @@ public class AppConfig {
 	}
 	
 	@Bean
-	public List<Dataset<Row>> getData(){
+	public Dataset<Row> getData(){
 		SparkSession sparkSession = this.sparkSession();
+		List<Dataset<Row>> dataList = new ArrayList<Dataset<Row>>();
 		File[] allDataFiles = new File(dataPath).listFiles();
-		dataPreProcess(allDataFiles);
+//		dataPreProcess(allDataFiles);
 		for(int i = 0; i < allDataFiles.length; i++){
 			Dataset<Row> dataset = sparkSession.read().csv(dataPath + allDataFiles[i].getName());
-			this.dataList.add(this.updateColumnName(dataset));
+			dataList.add(this.updateColumnName(dataset));
 		}	
-		return this.dataList;
-	}
-	
-	@Bean
-	public Dataset<Row> unionData(){
-		if(this.dataList.size() != 10) {
-			this.getData();
-		}
 		
-		this.data = this.dataList.get(0);
-		for(int i = 1; i < this.dataList.size(); i++) {
-			this.data = this.data.union(this.dataList.get(i));
+		this.data = dataList.get(0);
+		for(int i = 1; i < dataList.size(); i++) {
+			this.data = this.data.union(dataList.get(i));
 		}
 		return this.data;
 	}
 	
 	private Dataset<Row> updateColumnName(Dataset<Row> dataset) {
-		for(int i = 0; i < this.columnName.size(); i++) {
+		for(int i = 0; i < AppConfig.columnName.size(); i++) {
 			dataset = dataset.withColumnRenamed("_c" + Integer.toString(i), AppConfig.columnName.get(i));
 		}
 		dataset = dataset.drop("_c" + Integer.toString(19));
