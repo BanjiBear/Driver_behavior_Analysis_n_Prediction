@@ -44,7 +44,7 @@ public class AppConfig {
 	@Value("${spring.application.data.path}")
 	private String dataPath;
 	
-	private DriverRepository repo;
+	private DriverRepository repo = new DriverRepository();
 	private Dataset<Row> data;
 	private static final List<String> columnName = Collections.unmodifiableList( new ArrayList<String>() {
 		{
