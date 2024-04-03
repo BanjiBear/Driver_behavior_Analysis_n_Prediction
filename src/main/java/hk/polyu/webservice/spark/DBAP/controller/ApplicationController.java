@@ -1,7 +1,5 @@
 package hk.polyu.webservice.spark.DBAP.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.text.SimpleDateFormat;  
 import java.util.Date; 
 
@@ -18,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 
 //Package dependencies
-import hk.polyu.webservice.spark.DBAP.entity.DriverInfo;
-import hk.polyu.webservice.spark.DBAP.entity.DriverRecord;
 import hk.polyu.webservice.spark.DBAP.service.DriverBehaviorAnalysisService;
 import hk.polyu.webservice.spark.DBAP.status.ResponseFactory;
 
@@ -27,7 +23,6 @@ import hk.polyu.webservice.spark.DBAP.status.ResponseFactory;
 @RestController
 public class ApplicationController{
 	
-	//TO-Do: Autowire a service and here
 	@Autowired
 	DriverBehaviorAnalysisService driverBehaviorAnalysisService;
 	
@@ -50,7 +45,7 @@ public class ApplicationController{
 	
 	
 	@GetMapping("/drivers/{driverID}")
-	public void generateDriverSummary(
+	public ResponseFactory generateDriverSummary(
 			@PathVariable(required = true) String driverID,
 			@RequestParam(name = "time", defaultValue = "", required = false) String time){
 		/*
@@ -61,6 +56,11 @@ public class ApplicationController{
 		 * https://stackoverflow.com/questions/37878684/when-to-choose-requestparam-over-pathvariable-and-vice-versa
 		 * https://www.baeldung.com/spring-requestparam-vs-pathvariable
 		 * */
+		
+		if(time.equals("") || time.isEmpty() || time.isBlank()) {
+			return driverBehaviorAnalysisService.getDriverSummary(driverID);
+		}
+		return driverBehaviorAnalysisService.getDriverSummaryWithTime(driverID, time);
 	}
 
 }
