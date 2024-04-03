@@ -7,7 +7,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import org.json.JSONArray;
 
 //Spring dependency
 import org.springframework.beans.factory.annotation.Value;
@@ -80,7 +82,7 @@ public class AppConfig {
 	}
 	
 	@Bean
-	public Dataset<Row> getData(){
+	public Dataset<Row> driversData(){
 		SparkSession sparkSession = this.sparkSession();
 		List<Dataset<Row>> dataList = new ArrayList<Dataset<Row>>();
 		File[] allDataFiles = new File(dataPath).listFiles();
@@ -94,7 +96,43 @@ public class AppConfig {
 		for(int i = 1; i < dataList.size(); i++) {
 			this.data = this.data.union(dataList.get(i));
 		}
+		
+		this.driversStatsByEvent();
+		
 		return this.data;
+	}
+	
+	@Bean
+	public HashMap<String, JSONArray> driversStatsByEvent(){
+		HashMap<String, JSONArray> stats = new HashMap<String, JSONArray>();
+		
+		stats.put("isOverspeed", this.getCountQueryResult("driverID", "isOverspeed"));
+		stats.put("overspeedTime", new JSONArray(
+												this.data.toDF()
+												.filter(this.data.col("overspeedTime").isNotNull())
+												.groupBy("driverID")
+												.sum("overspeedTime")
+												.toJSON().collectAsList().toString()));
+		stats.put("isFatigueDriving", this.getCountQueryResult("driverID", "isFatigueDriving"));
+		stats.put("isNeutralSlide", this.getCountQueryResult("driverID", "isNeutralSlide"));
+		stats.put("neutralSlideTime", new JSONArray(
+												this.data.toDF()
+												.filter(this.data.col("neutralSlideTime").isNotNull())
+												.groupBy("driverID")
+												.sum("neutralSlideTime")
+												.toJSON().collectAsList().toString()));
+		stats.put("isHthrottleStop", this.getCountQueryResult("driverID", "isHthrottleStop"));
+		stats.put("isOilLeak", this.getCountQueryResult("driverID", "isOilLeak"));
+		
+		return stats;
+	}
+	
+	private JSONArray getCountQueryResult(String col1, String col2) {
+		return new JSONArray(
+				this.data.toDF()
+				.filter(this.data.col(col2).isNotNull())
+				.groupBy(col1, col2).count()
+				.toJSON().collectAsList().toString());
 	}
 	
 	private Dataset<Row> updateColumnName(Dataset<Row> dataset) {
@@ -103,6 +141,7 @@ public class AppConfig {
 		}
 		dataset = dataset.drop("_c" + Integer.toString(19));
 		
+		//https://stackoverflow.com/questions/49826020/how-to-cast-all-columns-of-spark-dataset-to-string-using-java
 		dataset = dataset.withColumn("isRapidlySpeedup", dataset.col("isRapidlySpeedup").cast("Integer"));
 		dataset = dataset.withColumn("isRapidlySlowdown", dataset.col("isRapidlySlowdown").cast("Integer"));
 		
