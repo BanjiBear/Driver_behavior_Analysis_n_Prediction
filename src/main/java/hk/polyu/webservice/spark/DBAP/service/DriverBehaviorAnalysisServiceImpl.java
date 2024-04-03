@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 //Package dependencies
 import hk.polyu.webservice.spark.DBAP.status.ResponseFactory;
+import hk.polyu.webservice.spark.DBAP.status.Status;
 import hk.polyu.webservice.spark.DBAP.entity.DriverInfo;
 import hk.polyu.webservice.spark.DBAP.entity.DriverRecord;
 import hk.polyu.webservice.spark.DBAP.entity.DriverStats;
@@ -48,27 +49,32 @@ public class DriverBehaviorAnalysisServiceImpl implements DriverBehaviorAnalysis
 		 * */
 		List<DriverInfo> driversInfo = new ArrayList<DriverInfo>();
 		this.query = this.getCountQueryResult("driverID", "carPlateNumber");
-		for(int i = 0; i < this.query.length(); i++) {
-			DriverInfo driver = new DriverInfo();
-			driver.setDriverID(this.query.getJSONObject(i).getString("driverID"));
-			driver.setCarPlateNumber(this.query.getJSONObject(i).getString("carPlateNumber"));
-			driversInfo.add(driver);
-		}
-		
-		for(int i = 0; i < driversInfo.size(); i++) {
-			DriverStats driverStats = new DriverStats();
-			for (String key : this.driversStatsByEvent.keySet()) {
-				driverStats = configDriverStats(driversInfo.get(i).getDriverID(), driverStats, key, this.driversStatsByEvent.get(key));
+		try {
+			for(int i = 0; i < this.query.length(); i++) {
+				DriverInfo driver = new DriverInfo();
+				driver.setDriverID(this.query.getJSONObject(i).getString("driverID"));
+				driver.setCarPlateNumber(this.query.getJSONObject(i).getString("carPlateNumber"));
+				driversInfo.add(driver);
 			}
-			driversInfo.get(i).setDriverStats(driverStats);
+		}
+		catch(Exception e) {
+			return responseFormation(Status.UNEXPECTED_ERROR, driversInfo);
 		}
 		
-		for(int i = 0; i < driversInfo.size(); i++) {
-			System.out.println(driversInfo.get(i));
+		try {
+			for(int i = 0; i < driversInfo.size(); i++) {
+				DriverStats driverStats = new DriverStats();
+				for (String key : this.driversStatsByEvent.keySet()) {
+					driverStats = configDriverStats(driversInfo.get(i).getDriverID(), driverStats, key, this.driversStatsByEvent.get(key));
+				}
+				driversInfo.get(i).setDriverStats(driverStats);
+			}
 		}
-
+		catch(Exception e) {
+			return responseFormation(Status.UNEXPECTED_ERROR, driversInfo);
+		}
 		
-		return responseFactory;
+		return responseFormation(Status.RESULT_FOUND, driversInfo);
 	}
 	
 	@Override
@@ -116,6 +122,10 @@ public class DriverBehaviorAnalysisServiceImpl implements DriverBehaviorAnalysis
 	}
 	
 	
-	//private ResponseFactory responseFormation(){}
+	private ResponseFactory responseFormation(Status status, List<DriverInfo> resultList){
+		this.responseFactory.setStatus(status);
+		this.responseFactory.setReturnDataList(resultList);;
+		return this.responseFactory;
+	}
 	
 }

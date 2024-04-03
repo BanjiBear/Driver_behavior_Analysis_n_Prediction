@@ -35,17 +35,18 @@ public class ApplicationController{
 	@GetMapping("/test")
 	//@ResponseBody is included in the @RestController annotation
 	public String test() {
-		return "The service is available";
+		return "The service is available at: " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
 	}
 	
 	@GetMapping("/")
-	//@ResponseBody is included in the @RestController annotation
 	public String home() {
-		return "DBAP RESTful web services available at: " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
+		return "Home Page"; 
 	}
 	
 	@GetMapping("/drivers")
-	public void generateSummary() {}
+	public ResponseFactory generateSummary() {
+		return driverBehaviorAnalysisService.getAllDriverSummary(); 
+	}
 	
 	
 	@GetMapping("/drivers/{driverID}")
