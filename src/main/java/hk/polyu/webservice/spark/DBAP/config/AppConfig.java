@@ -22,6 +22,8 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import hk.polyu.webservice.spark.DBAP.repository.DriverRepository;
+
 
 // Root Configuration
 @Configuration
@@ -42,6 +44,7 @@ public class AppConfig {
 	@Value("${spring.application.data.path}")
 	private String dataPath;
 	
+	private DriverRepository repo;
 	private Dataset<Row> data;
 	private static final List<String> columnName = Collections.unmodifiableList( new ArrayList<String>() {
 		{
@@ -106,33 +109,15 @@ public class AppConfig {
 	public HashMap<String, JSONArray> driversStatsByEvent(){
 		HashMap<String, JSONArray> stats = new HashMap<String, JSONArray>();
 		
-		stats.put("isOverspeed", this.getCountQueryResult("driverID", "isOverspeed"));
-		stats.put("overspeedTime", new JSONArray(
-												this.data.toDF()
-												.filter(this.data.col("overspeedTime").isNotNull())
-												.groupBy("driverID")
-												.sum("overspeedTime")
-												.toJSON().collectAsList().toString()));
-		stats.put("isFatigueDriving", this.getCountQueryResult("driverID", "isFatigueDriving"));
-		stats.put("isNeutralSlide", this.getCountQueryResult("driverID", "isNeutralSlide"));
-		stats.put("neutralSlideTime", new JSONArray(
-												this.data.toDF()
-												.filter(this.data.col("neutralSlideTime").isNotNull())
-												.groupBy("driverID")
-												.sum("neutralSlideTime")
-												.toJSON().collectAsList().toString()));
-		stats.put("isHthrottleStop", this.getCountQueryResult("driverID", "isHthrottleStop"));
-		stats.put("isOilLeak", this.getCountQueryResult("driverID", "isOilLeak"));
+		stats.put("isOverspeed", this.repo.getCountQueryResult(this.data, "driverID", "isOverspeed"));
+		stats.put("overspeedTime", this.repo.getSumQueryResult(this.data, "driverID", "overspeedTime"));
+		stats.put("isFatigueDriving", this.repo.getCountQueryResult(this.data, "driverID", "isFatigueDriving"));
+		stats.put("isNeutralSlide", this.repo.getCountQueryResult(this.data, "driverID", "isNeutralSlide"));
+		stats.put("neutralSlideTime", this.repo.getSumQueryResult(this.data, "driverID", "neutralSlideTime"));
+		stats.put("isHthrottleStop", this.repo.getCountQueryResult(this.data, "driverID", "isHthrottleStop"));
+		stats.put("isOilLeak", this.repo.getCountQueryResult(this.data, "driverID", "isOilLeak"));
 		
 		return stats;
-	}
-	
-	private JSONArray getCountQueryResult(String col1, String col2) {
-		return new JSONArray(
-				this.data.toDF()
-				.filter(this.data.col(col2).isNotNull())
-				.groupBy(col1, col2).count()
-				.toJSON().collectAsList().toString());
 	}
 	
 	private Dataset<Row> updateColumnName(Dataset<Row> dataset) {
