@@ -3,14 +3,14 @@
 
 /* Overwrite in common */
 div#centerContainer{
-	position: absolute;
 	top: 50%;
-	left: 50%;
 	height: 60%;
-	width: 70%;
-	-ms-transform: translate(-50%, -50%);
-	transform: translate(-50%, -50%);
 	/*border: 2px solid green;*/
+}
+/* Overwrite in common */
+div#buttonContainer{
+	position: unset; /*For Chrome*/
+	/*border: 2px solid red;*/
 }
 
 div#centerContainer p{

@@ -19,7 +19,7 @@ table, th, td {
 	border-collapse: collapse;
 }
 
-
+/* Overwrite in common */
 div#buttonContainer{
 	position: unset;
 	width: 100%;

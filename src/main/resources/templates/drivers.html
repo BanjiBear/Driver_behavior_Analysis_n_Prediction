@@ -7,8 +7,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" th:href="@{./css/drivers.css}">
-	<link rel="stylesheet" href="../static/css/drivers.css">
+	<link rel="stylesheet" th:href="@{/css/drivers.css}">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Driver Behavior Analysis Service</title>
 </head>
@@ -44,8 +43,9 @@
 		</div>
 	</div>
 	<div id="tableContainer" th:unless="${response.getStatusCode() == 200}">
-		<h1 th:text="${response.getStatusCode()}"></h1>
-		<h2 th:text="${response.getStatusMsg()}"></h2>
+		<h2 th:text="'Error code: ' + ${response.getStatusCode()}"></h2>
+		<h2 th:text="'Error message: ' + ${response.getStatusMsg()}"></h2>
+		<a href="/"><button class="button">Back</button></a>
 	</div>
 
 </body>
