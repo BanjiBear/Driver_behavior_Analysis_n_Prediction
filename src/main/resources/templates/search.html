@@ -40,6 +40,9 @@
 		function searchDriver(e) {
 			var driverID = document.getElementById('driverID').value;
 			var time = document.getElementById('time').value;
+			if (driverID == null || driverID == "") {
+				driverID = "NULL";
+			}
 			// alert(driverID + time);
 			window.location.replace("/drivers/" + driverID + "?time=" + time);
 		}
