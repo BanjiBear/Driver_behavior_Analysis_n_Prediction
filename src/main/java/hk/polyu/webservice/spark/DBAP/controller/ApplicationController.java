@@ -43,6 +43,11 @@ public class ApplicationController{
 	public String aboutPage(Model model) {
 		return "about";
 	}
+
+	@GetMapping("/search")
+	public String searchPage(Model model) {
+		return "search";
+	}
 	
 	@GetMapping("/drivers")
 	public String generateSummary(Model model) {
@@ -53,9 +58,10 @@ public class ApplicationController{
 	
 	
 	@GetMapping("/drivers/{driverID}")
-	public ResponseFactory generateDriverSummary(
+	public String generateDriverSummary(
 			@PathVariable(required = true) String driverID,
-			@RequestParam(name = "time", defaultValue = "", required = false) String time){
+			@RequestParam(name = "time", defaultValue = "", required = false) String time,
+			Model model){
 		/*
 		 * Here we assume one car per driver
 		 * To-Do: verification of the above assumption
@@ -66,9 +72,12 @@ public class ApplicationController{
 		 * */
 		
 		if(time.equals("") || time.isEmpty() || time.isBlank()) {
-			return driverBehaviorAnalysisService.getDriverSummary(driverID);
+			model.addAttribute("response", driverBehaviorAnalysisService.getDriverSummary(driverID));
 		}
-		return driverBehaviorAnalysisService.getDriverSummaryWithTime(driverID, time);
+		else {
+			model.addAttribute("response", driverBehaviorAnalysisService.getDriverSummaryWithTime(driverID, time));
+		}
+		return "drivers";
 	}
 
 }

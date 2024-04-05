@@ -1,0 +1,48 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta name="author" content="Banjibear">
+	<meta name="refresh" content="60">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" th:href="@{/css/search.css}">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Driver Behavior Analysis Service</title>
+</head>
+
+<body>
+
+	<div id="div1">
+		<div id="centerContainer">
+			<h1>Search Particular Driving Record:</h1>
+			<div id="line"></div>
+			<div id="inputContainer">
+				<div>
+					<label for="driverID">Driver ID: </label>
+					<input type="text" name="driverID" id="driverID" required><br><br>
+				</div>
+				<div>
+					<label for="time">Data and Time: </label>
+					<input type="text" name="time" id="time"><br><br>
+				</div>
+			</div>
+			<div id="buttonContainer">
+				<a onClick="searchDriver(this)"><button class="button">Search</button></a>
+				<a href="/"><button class="button">Back</button></a>
+			</div>
+		</div>
+	</div>
+
+
+	<script>
+		function searchDriver(e) {
+			var driverID = document.getElementById('driverID').value;
+			var time = document.getElementById('time').value;
+			// alert(driverID + time);
+			window.location.replace("/drivers/" + driverID + "?time=" + time);
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+@import "common.css";
+
+
+/* Overwrite in common */
+div#centerContainer{
+	height: unset;
+	/*border: 2px solid green;*/
+}
+/* Overwrite in common */
+div#buttonContainer{
+	position: unset;
+	/*border: 2px solid red;*/
+}
+
+
+div#inputContainer{
+	width: 100%;
+	display: table;
+	/*border: 2px solid purple;*/
+}
+
+div#inputContainer div{
+	display: table-cell;
+	text-align: center;
+	padding-top: 1rem;
+	/*border: 2px solid green;*/
+}
+
+div#inputContainer div label{
+	font-size: 2rem;
+}
+div#inputContainer div input{
+	line-height: 2rem;
+	font-family: inherit;
+	font-size: 2rem;
+	border-radius: 1rem;
+}
