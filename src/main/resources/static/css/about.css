@@ -1,0 +1,20 @@
+@import "common.css";
+
+
+/* Overwrite in common */
+div#centerContainer{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	height: 60%;
+	width: 70%;
+	-ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	/*border: 2px solid green;*/
+}
+
+div#centerContainer p{
+	font-size: 2rem;
+	text-align: justify;
+	/*border: 2px solid blue;*/
+}

@@ -1,0 +1,31 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta name="author" content="Banjibear">
+	<meta name="refresh" content="60">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" th:href="@{./css/common.css}">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Driver Behavior Analysis Service</title>
+</head>
+
+<body>
+
+	<div id="div1">
+		<div id="centerContainer">
+			<h1>Driver Behavior Analysis Service</h1>
+			<div id="line"></div>
+			<div id="buttonContainer">
+				<a href="/drivers"><button class="button">All Drivers Summary</button></a>
+				<a><button class="button">Search Driver Summary</button></a>
+				<a><button class="button">Real Time Monitor</button></a>
+				<a><button class="button">Real Time Prediction</button></a>
+				<a href="/about"><button class="button">About DBAS</button></a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

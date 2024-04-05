@@ -1,0 +1,52 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta name="author" content="Banjibear">
+	<meta name="refresh" content="60">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" th:href="@{./css/drivers.css}">
+	<link rel="stylesheet" href="../static/css/drivers.css">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Driver Behavior Analysis Service</title>
+</head>
+
+<body>
+	<div id="tableContainer" th:if="${response.getStatusCode() == 200}">
+		<div th:each="driver: ${response.returnDataList}">
+			<h1 th:text="'Driver: ' + ${driver.driverID} + ' Car Plate: ' + ${driver.carPlateNumber}"></h1>
+			<table>
+				<tr>
+					<th>Over Speed Count</th>
+					<th>Over Speed Total Duration</th>
+					<th>Fatigue Driving Count</th>
+					<th>Neutral Slide Count</th>
+					<th>Neutral Slide Total Duration</th>
+					<th>Hurry Stop Count</th>
+					<th>Oil Leak Count</th>
+				</tr>
+				<tr th:each="stats : ${driver.driverStats}">
+					<td th:text="${stats.numOfOverspeed}"></td>
+					<td th:text="${stats.totalOverspeedT}"></td>
+					<td th:text="${stats.numOfFatigue}"></td>
+					<td th:text="${stats.numOfNeutralSlide}"></td>
+					<td th:text="${stats.totalNeutralSlideT}"></td>
+					<td th:text="${stats.numOfHurryThrottleStop}"></td>
+					<td th:text="${stats.numOfOilLeak}"></td>
+				</tr>
+			</table>
+		</div>
+		<br>
+		<div id="buttonContainer">
+			<a href="/"><button class="button">Back</button></a>
+		</div>
+	</div>
+	<div id="tableContainer" th:unless="${response.getStatusCode() == 200}">
+		<h1 th:text="${response.getStatusCode()}"></h1>
+		<h2 th:text="${response.getStatusMsg()}"></h2>
+	</div>
+
+</body>
+</html>

@@ -13,14 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 
 //Package dependencies
 import hk.polyu.webservice.spark.DBAP.service.DriverBehaviorAnalysisService;
 import hk.polyu.webservice.spark.DBAP.status.ResponseFactory;
 
 
-@RestController
+@Controller
 public class ApplicationController{
 	
 	@Autowired
@@ -34,13 +35,20 @@ public class ApplicationController{
 	}
 	
 	@GetMapping("/")
-	public String home() {
-		return "Home Page"; 
+	public String home(Model model) {
+		return "index";
+	}
+	
+	@GetMapping("/about")
+	public String aboutPage(Model model) {
+		return "about";
 	}
 	
 	@GetMapping("/drivers")
-	public ResponseFactory generateSummary() {
-		return driverBehaviorAnalysisService.getAllDriverSummary(); 
+	public String generateSummary(Model model) {
+		//return driverBehaviorAnalysisService.getAllDriverSummary();
+		model.addAttribute("response", driverBehaviorAnalysisService.getAllDriverSummary());
+		return "drivers"; 
 	}
 	
 	
