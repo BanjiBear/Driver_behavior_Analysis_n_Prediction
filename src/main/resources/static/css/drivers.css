@@ -9,6 +9,15 @@ div#tableContainer{
 	/*border: 2px solid green;*/
 }
 
+div#recordContainer{
+	height: 100%;
+	width: 100%;
+	margin: auto;
+	overflow-x: scroll;
+	overflow-y: scroll;
+	/*border: 2px solid purple;*/
+}
+
 table{
 	width: 100%;
 	border: 1px solid #000a39;

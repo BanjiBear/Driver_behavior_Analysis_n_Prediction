@@ -70,5 +70,20 @@ public class DriverRepository{
 							.filter(col1 + " ='" + col1Val + "'")
 							.toJSON().collectAsList().toString());
 	}
+	
+	
+	public JSONArray getDriverRecords(Dataset<Row> driversData, String driverID, String time) {
+		if(time == "") {
+			return new JSONArray(driversData.toDF()
+								.filter("driverID = '" + driverID + "'")
+								.toJSON().collectAsList().toString());
+		}
+		else{
+			return new JSONArray(driversData.toDF()
+						.filter("driverID = '" + driverID + "'")
+						.filter(driversData.col("time").contains(time))
+						.toJSON().collectAsList().toString());
+		}
+	}
 
 }

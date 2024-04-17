@@ -24,7 +24,7 @@ public class DriverInfo{
 	 * */
 	private String driverID;
 	private String carPlateNumber;
-	private ArrayList<DriverRecord> driverRecordList = null;
+	private List<DriverRecord> driverRecordList = null;
 	private DriverStats driverStats = null;
 	
 	// Constructor DI vs Filed DI: https://odrotbohm.de/2013/11/why-field-injection-is-evil/
@@ -36,8 +36,8 @@ public class DriverInfo{
 	public void setDriverStats(DriverStats driverStats) { this.driverStats = driverStats; }
 	public DriverStats getDriverStats() { return this.driverStats; }
 	
-	public void setDriverRecordList(ArrayList<DriverRecord> driverRecordList) { this.driverRecordList = driverRecordList; }
-	public ArrayList<DriverRecord> getDriverRecordList() { return this.driverRecordList; }
+	public void setDriverRecordList(List<DriverRecord> driverRecordList) { this.driverRecordList = driverRecordList; }
+	public List<DriverRecord> getDriverRecordList() { return this.driverRecordList; }
 	
 	public void setDriverID(String driverID) { this.driverID = driverID; }
 	public String getDriverID() { return this.driverID; }

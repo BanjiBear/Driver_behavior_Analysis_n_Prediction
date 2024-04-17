@@ -37,6 +37,45 @@
 				</tr>
 			</table>
 		</div>
+		<div id="recordContainer" th:if="${response.returnDataList[0].driverRecordList != null}">
+			<div  th:each="driver: ${response.returnDataList}">
+				<h1>Matching Records:</h1>
+				<table>
+					<tr>
+						<th>Speed</th>
+						<th>Site Name</th>
+						<th>Time</th>
+						<th>isRapidlySpeedup</th>
+						<th>isRapidlySlowdown</th>
+						<th>isNeutralSlide</th>
+						<th>isNeutralSlideFinished</th>
+						<th>neutralSlideTime</th>
+						<th>isOverspeed</th>
+						<th>isOverspeedFinished</th>
+						<th>overspeedTime</th>
+						<th>isFatigueDriving</th>
+						<th>isHthrottleStop</th>
+						<th>isOilLeak</th>
+					</tr>
+					<tr th:each="record : ${driver.driverRecordList}">
+						<td th:text="${record.speed}"></td>
+						<td th:text="${record.siteName}"></td>
+						<td th:text="${record.time}"></td>
+						<td th:text="${record.isRapidlySpeedup}"></td>
+						<td th:text="${record.isRapidlySlowdown}"></td>
+						<td th:text="${record.isNeutralSlide}"></td>
+						<td th:text="${record.isNeutralSlideFinished}"></td>
+						<td th:text="${record.neutralSlideTime}"></td>
+						<td th:text="${record.isOverspeed}"></td>
+						<td th:text="${record.isOverspeedFinished}"></td>
+						<td th:text="${record.overspeedTime}"></td>
+						<td th:text="${record.isFatigueDriving}"></td>
+						<td th:text="${record.isHthrottleStop}"></td>
+						<td th:text="${record.isOilLeak}"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
 		<br>
 		<div id="buttonContainer">
 			<a href="/"><button class="button">Back</button></a>

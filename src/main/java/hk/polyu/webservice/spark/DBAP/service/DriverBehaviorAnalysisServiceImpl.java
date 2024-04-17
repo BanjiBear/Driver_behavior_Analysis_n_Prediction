@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import org.json.JSONArray;
-
+import org.json.JSONObject;
 //Spark dependencies
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 //Package dependencies
+import hk.polyu.webservice.spark.DBAP.util.DataUtil;
 import hk.polyu.webservice.spark.DBAP.status.ResponseFactory;
 import hk.polyu.webservice.spark.DBAP.status.Status;
 import hk.polyu.webservice.spark.DBAP.entity.DriverInfo;
@@ -81,6 +82,7 @@ public class DriverBehaviorAnalysisServiceImpl implements DriverBehaviorAnalysis
 	@Override
 	public ResponseFactory getDriverSummary(String driverID){
 		List<DriverInfo> driversInfo = new ArrayList<DriverInfo>();
+		List<DriverRecord> driversRecord = new ArrayList<DriverRecord>();
 		
 		try {
 			//Verify Driver exist
@@ -100,19 +102,29 @@ public class DriverBehaviorAnalysisServiceImpl implements DriverBehaviorAnalysis
 				driverStats = configDriverStats(driver.getDriverID(), driverStats, key, this.driversStatsByEvent.get(key));
 			}
 			driver.setDriverStats(driverStats);
+			//System.out.println(this.query.length());
+			
+			//Create Driver Records
+			this.query = this.repo.getDriverRecords(this.driversData, driverID, "");
+			for(int i = 0; i < this.query.length(); i++) {
+				DriverRecord record = new DriverRecord();
+				record = this.configDriversRecord(record, this.query.getJSONObject(i));
+				driversRecord.add(record);
+			}
+			driver.setDriverRecordList(driversRecord);
 			driversInfo.add(driver);
-			System.out.println(this.query.length());
 		}
 		catch(Exception e) {
+			System.out.println(e);
 			return responseFormation(Status.UNEXPECTED_ERROR, driversInfo);
 		}
-
 		return responseFormation(Status.RESULT_FOUND, driversInfo);
 	}
 	
 	@Override
 	public ResponseFactory getDriverSummaryWithTime(String driverID, String time){
 		List<DriverInfo> driversInfo = new ArrayList<DriverInfo>();
+		List<DriverRecord> driversRecord = new ArrayList<DriverRecord>();
 		
 		//Sample Time format: 2017-01-01 or 2017-01-01 08:02:10
 		Pattern p1 = Pattern.compile("\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2}$");
@@ -151,6 +163,15 @@ public class DriverBehaviorAnalysisServiceImpl implements DriverBehaviorAnalysis
 					driverStats = configDriverStats(driver.getDriverID(), driverStats, key, tmp.get(key));
 				}
 				driver.setDriverStats(driverStats);
+				
+				//Create Driver Records
+				this.query = this.repo.getDriverRecords(this.driversData, driverID, time);
+				for(int i = 0; i < this.query.length(); i++) {
+					DriverRecord record = new DriverRecord();
+					record = this.configDriversRecord(record, this.query.getJSONObject(i));
+					driversRecord.add(record);
+				}
+				driver.setDriverRecordList(driversRecord);
 				driversInfo.add(driver);
 			}
 			else {
@@ -179,6 +200,34 @@ public class DriverBehaviorAnalysisServiceImpl implements DriverBehaviorAnalysis
 			}
 		}
 		return driverStats;
+	}
+	
+	private DriverRecord configDriversRecord(DriverRecord driverRecord, JSONObject query) {
+		//Reference: https://stackoverflow.com/questions/49113021/why-does-filter-remove-null-value-by-default-on-spark-dataframe
+		for(int i = 0; i < DataUtil.columnName.size(); i++) {
+			if(query.isNull(DataUtil.columnName.get(i))){
+				query.put(DataUtil.columnName.get(i), "N/A");
+			}
+		}
+		//name = ((city.getName() == null) ? "N/A" : city.getName());
+		driverRecord.setLatitude(query.getString("latitude"));
+		driverRecord.setLongtitude(query.getString("longtitude"));
+		driverRecord.setSpeed(query.getString("speed"));
+		driverRecord.setDirection(query.getString("direction"));
+		driverRecord.setSiteName(query.getString("siteName"));
+		driverRecord.setTime(query.getString("time"));
+		driverRecord.setIsRapidlySpeedup(query.get("isRapidlySpeedup").getClass().equals(Integer.class) ? Integer.toString(query.getInt("isRapidlySpeedup")) : query.getString("isRapidlySpeedup"));
+		driverRecord.setIsRapidlySlowdown(query.get("isRapidlySlowdown").getClass().equals(Integer.class) ? Integer.toString(query.getInt("isRapidlySlowdown")) : query.getString("isRapidlySlowdown"));
+		driverRecord.setIsNeutralSlide(query.get("isNeutralSlide").getClass().equals(Integer.class) ? Integer.toString(query.getInt("isNeutralSlide")) : query.getString("isNeutralSlide"));
+		driverRecord.setIsNeutralSlideFinished(query.get("isNeutralSlideFinished").getClass().equals(Integer.class) ? Integer.toString(query.getInt("isNeutralSlideFinished")) : query.getString("isNeutralSlideFinished"));
+		driverRecord.setNeutralSlideTimeD(query.get("neutralSlideTime").getClass().equals(Integer.class) ? Integer.toString(query.getInt("neutralSlideTime")) : query.getString("neutralSlideTime"));
+		driverRecord.setIsOverspeed(query.get("isOverspeed").getClass().equals(Integer.class) ? Integer.toString(query.getInt("isOverspeed")) : query.getString("isOverspeed"));
+		driverRecord.setIsOverspeedFinished(query.get("isOverspeedFinished").getClass().equals(Integer.class) ? Integer.toString(query.getInt("isOverspeedFinished")) : query.getString("isOverspeedFinished"));
+		driverRecord.setOverspeedTime(query.get("overspeedTime").getClass().equals(Integer.class) ? Integer.toString(query.getInt("overspeedTime")) : query.getString("overspeedTime"));
+		driverRecord.setIsFatigueDriving(query.get("isFatigueDriving").getClass().equals(Integer.class) ? Integer.toString(query.getInt("isFatigueDriving")) : query.getString("isFatigueDriving"));
+		driverRecord.setIsHthrottleStop(query.get("isHthrottleStop").getClass().equals(Integer.class) ? Integer.toString(query.getInt("isHthrottleStop")) : query.getString("isHthrottleStop"));
+		driverRecord.setIsOilLeak(query.get("isOilLeak").getClass().equals(Integer.class) ? Integer.toString(query.getInt("isOilLeak")) : query.getString("isOilLeak"));
+		return driverRecord;
 	}
 	
 	

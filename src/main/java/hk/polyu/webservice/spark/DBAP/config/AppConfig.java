@@ -23,6 +23,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import hk.polyu.webservice.spark.DBAP.repository.DriverRepository;
+import hk.polyu.webservice.spark.DBAP.util.DataUtil;
 
 
 // Root Configuration
@@ -46,30 +47,6 @@ public class AppConfig {
 	
 	private DriverRepository repo = new DriverRepository();
 	private Dataset<Row> data;
-	private static final List<String> columnName = Collections.unmodifiableList( new ArrayList<String>() {
-		{
-	        add("driverID");
-	        add("carPlateNumber");
-	        add("latitude");
-	        add("longtitude");
-	        add("speed");
-	        add("direction");
-	        add("siteName");
-	        add("time");
-	        add("isRapidlySpeedup");
-	        add("isRapidlySlowdown");
-	        add("isNeutralSlide");
-	        add("isNeutralSlideFinished");
-	        add("neutralSlideTime");
-	        add("isOverspeed");
-	        add("isOverspeedFinished");
-	        add("overspeedTime");
-	        add("isFatigueDriving");
-	        add("isHthrottleStop");
-	        add("isOilLeak");
-	    }
-	} );
-	Integer NUMBER_OF_FEATURES = 19;
 	
 	@Bean
 	public SparkSession sparkSession(){
@@ -121,8 +98,8 @@ public class AppConfig {
 	}
 	
 	private Dataset<Row> updateColumnName(Dataset<Row> dataset) {
-		for(int i = 0; i < AppConfig.columnName.size(); i++) {
-			dataset = dataset.withColumnRenamed("_c" + Integer.toString(i), AppConfig.columnName.get(i));
+		for(int i = 0; i < DataUtil.NUMBER_OF_FEATURES; i++) {
+			dataset = dataset.withColumnRenamed("_c" + Integer.toString(i), DataUtil.columnName.get(i));
 		}
 		dataset = dataset.drop("_c" + Integer.toString(19));
 		
@@ -167,8 +144,8 @@ public class AppConfig {
 					        count++;
 					    }
 					}
-					if(count < NUMBER_OF_FEATURES - 1) {
-						for(int j = 0; j < (NUMBER_OF_FEATURES - 1 - count); j++) {
+					if(count < DataUtil.NUMBER_OF_FEATURES - 1) {
+						for(int j = 0; j < (DataUtil.NUMBER_OF_FEATURES - 1 - count); j++) {
 							line = line + ',';
 						}
 					}
