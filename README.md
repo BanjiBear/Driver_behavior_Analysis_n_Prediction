@@ -1,4 +1,4 @@
-# Driver Behavior Analysis and Prediction
+# [2024] Driver Behavior Analysis and Prediction
 
 ![img](https://img.shields.io/badge/Build%20on%20Centos%20Linux%207.9-Pass-brightgreen) ![](https://img.shields.io/badge/Maven%20Build-Pass-brightgreen) ![](https://img.shields.io/badge/Coverage-93%25-brightgreen) ![](https://img.shields.io/badge/Release%20Version-V1.0-orange) 
 
@@ -65,11 +65,118 @@ For detailed description of Features and Functionalities with figures illustrati
 
 ## System Design and Architecture
 The program is written in Java with the SpringBoot framework for building RESTful APIs and using Java Spark for data related operations.
-This project adopts a multi-layer architecture. The multi-layer architecture completely separates the front end and backend, while the backend can further be divided into three different layers. As illustrated in the figure below, the front end model, also known as the view model, is responsible for listening to request data and rendering response data. The model accepts input request then pass it to the backend embedded in a HTTP body and return response data in JSON format in a web page. Since SpringBoot web services are RESTful, the response data are automatically configured into JSON format. As for the backend, it consists of three layers, the Controller layer, Service layer, and Data persistence layer. The Controller layer manages the input and output data but only interacts with the service layer. According to different input paths, Controller pass the data to different service interfaces in the service layer. The service layer holds the interface and implements the core application logic and functionalities. This layer interacts with the Controller, the data, Spring Beans, and different entities (Plain-Old-Java-Objects, POJOs). Lastly, the Data Persistence Layer fetches data via SparkSQL and data persistence via MySQL. With the multi-layer design, this project is able to achieve parallel development, improved maintainability, and seamless upgrade in CI/CD.
+This project adopts a multi-layer architecture. The multi-layer architecture completely separates the front end and backend, while the backend can further be divided into three different layers.
 <img width="1173" alt="Screenshot 2024-05-20 at 7 03 32 PM" src="https://github.com/BanjiBear/Driver_behavior_Analysis_n_Prediction/assets/70761188/51c96a35-9a3f-4a2d-976d-8dc418370121">
-<img width="948" alt="Screenshot 2024-05-20 at 7 03 17 PM" src="https://github.com/BanjiBear/Driver_behavior_Analysis_n_Prediction/assets/70761188/31da1826-844c-4bc2-89a3-53b70d9e3dce">
+
+Since SpringBoot web services are RESTful, the response data are automatically configured into JSON format. As for the backend, it consists of three layers, the Controller layer, Service layer, and Data persistence layer.
+
+The Controller layer manages the input and output data but only interacts with the service layer. According to different input paths, Controller pass the data to different service interfaces in the service layer.
+```Java
+@RestController
+@RequestMapping("/api/driver")
+public class DriverController {
+
+    @Autowired
+    private DriverService driverService;
+
+    @GetMapping("/list")
+    public Result list() {
+        return Result.success(driverService.getDriverList());
+    }
+
+    @GetMapping("/info")
+    public Result info(@RequestParam String driverId) {
+        return Result.success(driverService.getDriverInfo(driverId));
+    }
+
+    @GetMapping("/behavior")
+    public Result behavior(@RequestParam String driverId) {
+        return Result.success(driverService.getDriverBehaviors(driverId));
+    }
+
+    @GetMapping("/diagram")
+    public Result diagram(@RequestParam String driverId) {
+        return Result.success(driverService.getDriverDiagram(driverId));
+    }
+}
+```
+
+The service layer holds the interface and implements the core application logic and functionalities. This layer interacts with the Controller, the data, Spring Beans, and different entities (Plain-Old-Java-Objects, POJOs).
+```Java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Driver {
+    // User Info
+    private String driverID;
+    private String carPlateNumber;
+
+    // Update Time
+    private Date updateTime;
+
+    // Real-time data
+    private double latitude;
+    private double longitude;
+    private int speed;
+    private int direction;
+
+    // History data
+    private int rapidlySpeedupTimes;
+    private int rapidlySlowdownTimes;
+    private int neutralSlideTimes;
+    private int overspeedTimes;
+    private int fatigueDrivingTimes;
+    private int hthrottleStopTimes;
+    private int oilLeakTimes;
+
+}
+```
+```Java
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class DriverBehaviors {
+
+    private String driverID;
+
+    // Driving behavior in slot
+    private String siteName;
+
+    private int isRapidlySpeedup;
+    private int isRapidlySlowdown;
+    private int isNeutralSlide;
+    private int isNeutralSlideFinished;
+    private int neutralSlideTime;
+    private int isOverspeed;
+    private int isOverspeedFinished;
+    private int overspeedTime;
+    private int isFatigueDriving;
+    private int isHthrottleStop;
+    private int isOilLeak;
+
+}
+```
+Lastly, the Data Persistence Layer fetches data via SparkSQL and data persistence via MySQL. With the multi-layer design, this project is able to achieve parallel development, improved maintainability, and seamless upgrade in CI/CD.
+```Java
+// Create a Spark session
+SparkSession spark = SparkSession.builder().appName("Java Spark SQL").getOrCreate();
+
+// Execute the SQL query
+Dataset<Row> df = spark.sql("SELECT window(time, '" + durationInSeconds + " seconds') as time_window, AVG(speed) as avg_speed " +
+        "FROM driving " +
+        "WHERE driverID = '" + driverId + "' " +
+        "AND time >= '" + new Timestamp(initTime.getTime()) + "' " +
+        "AND time <= '" + new Timestamp(cutOffTime.getTime()) + "' " +
+        "GROUP BY time_window " +
+        "ORDER BY time_window");
+```
 
 ## AWS Deployment Architecture
 <img width="1024" alt="Screenshot 2024-05-20 at 7 04 01 PM" src="https://github.com/BanjiBear/Driver_behavior_Analysis_n_Prediction/assets/70761188/cd0435f0-dd4d-4923-80ce-ed4aef378fb3">
+
+- AWS Amplify: Hosting Static Websites
+- Apache Spark on Amazon EMR
+- Amazon ElastiCache for Redis caching
+- Amazon RDS for MySQL
 
 
